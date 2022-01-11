@@ -42,6 +42,7 @@ nrf24l01_hal_t nrf24l01_hal_stm32f7xx = {
     &nrf24l01_hal_stm32f7xx_selectControl,
     &nrf24l01_hal_stm32f7xx_clockControl,
     &nrf24l01_hal_stm32f7xx_irqState,
+    &nrf24l01_hal_stm32f7xx_irqSource,
     &nrf24l01_hal_stm32f7xx_irqTrigger,
     &nrf24l01_hal_stm32f7xx_deinitialize, };
 
@@ -189,24 +190,28 @@ void nrf24l01_hal_stm32f7xx_spiTransfer(uint8_t tx, uint8_t *rx) {
 
 void nrf24l01_hal_stm32f7xx_powerControl(uint8_t state) {
     if (state) {
-        HAL_GPIO_WritePin((GPIO_TypeDef*)NRF24L01_PWR_PORT, NRF24L01_PWR_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin((GPIO_TypeDef*) NRF24L01_PWR_PORT, NRF24L01_PWR_PIN, GPIO_PIN_RESET);
         /* Wait for device voltage to stabilize */
         HAL_Delay(250);
     } else {
-        HAL_GPIO_WritePin((GPIO_TypeDef*)NRF24L01_PWR_PORT, NRF24L01_PWR_PIN, GPIO_PIN_SET);
+        HAL_GPIO_WritePin((GPIO_TypeDef*) NRF24L01_PWR_PORT, NRF24L01_PWR_PIN, GPIO_PIN_SET);
     }
 }
 
 void nrf24l01_hal_stm32f7xx_selectControl(uint8_t state) {
-    HAL_GPIO_WritePin((GPIO_TypeDef*)NRF24L01_CSN_PORT, NRF24L01_CSN_PIN, (GPIO_PinState) state);
+    HAL_GPIO_WritePin((GPIO_TypeDef*) NRF24L01_CSN_PORT, NRF24L01_CSN_PIN, (GPIO_PinState) state);
 }
 
 void nrf24l01_hal_stm32f7xx_clockControl(uint8_t state) {
-    HAL_GPIO_WritePin((GPIO_TypeDef*)NRF24L01_CE_PORT, NRF24L01_CE_PIN, (GPIO_PinState) state);
+    HAL_GPIO_WritePin((GPIO_TypeDef*) NRF24L01_CE_PORT, NRF24L01_CE_PIN, (GPIO_PinState) state);
 }
 
 uint8_t nrf24l01_hal_stm32f7xx_irqState(void) {
     return (uint8_t) (HAL_GPIO_ReadPin((GPIO_TypeDef*) NRF24L01_IRQ_PORT, NRF24L01_IRQ_PIN) == GPIO_PIN_RESET);
+}
+
+uint8_t nrf24l01_hal_stm32f7xx_irqSource(void) {
+    return (uint8_t) (EXTI->SWIER & NRF24L01_IRQ_PIN);
 }
 
 void nrf24l01_hal_stm32f7xx_irqTrigger(void) {
@@ -234,12 +239,18 @@ void nrf24l01_hal_stm32f7xx_deinitialize(void) {
 void NRF24L01_IRQ_HANDLER(void) {
 
     NRF24L01_TRACE_IRQ_ENTER();
-    HAL_GPIO_EXTI_IRQHandler(NRF24L01_IRQ_PIN);
 
-    /* In order to save HAL_GPIO_EXTI_Callback redefinition, execute callback directly */
+    /*
+     * HAL_GPIO_EXTI_IRQHandler call clears the pending interrupt pending flag.
+     * This prevents us from software interrupt trigger detection.
+     *
+     * Execute callback first and then proceed with clearing irq flags using HAL API call.
+     */
     if (nrfCallback != NULL) {
         nrfCallback(nrfContext);
     }
+
+    HAL_GPIO_EXTI_IRQHandler(NRF24L01_IRQ_PIN);
 
     NRF24L01_TRACE_IRQ_EXIT();
 }

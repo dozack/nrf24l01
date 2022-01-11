@@ -47,6 +47,7 @@ typedef struct {
     void        (*selectControl )(uint8_t state);
     void        (*clockControl  )(uint8_t state);
     uint8_t     (*irqState      )(void);
+    uint8_t     (*irqSource     )(void);
     void        (*irqTrigger    )(void);
     void        (*deinitialize  )(void);
 } nrf24l01_hal_t;
