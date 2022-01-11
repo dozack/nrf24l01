@@ -46,6 +46,7 @@ typedef enum {
 #define NRF24L01_TX_DONE        (0x1)
 #define NRF24L01_TX_ERROR       (0x2)
 #define NRF24L01_RX_DONE        (0x4)
+#define NRF24L01_IRQ_TRIGGER    (0x8)
 
 typedef void (*nrf24l01_event_callback_t)(void *context, uint8_t events);
 

@@ -98,6 +98,8 @@ extern void nrf24l01_hal_stm32f7xx_clockControl(uint8_t state);
 
 extern uint8_t nrf24l01_hal_stm32f7xx_irqState(void);
 
+extern uint8_t nrf24l01_hal_stm32f7xx_irqSource(void);
+
 extern void nrf24l01_hal_stm32f7xx_irqTrigger(void);
 
 extern void nrf24l01_hal_stm32f7xx_deinitialize(void);

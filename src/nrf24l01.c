@@ -330,8 +330,11 @@ static void nrf24l01_irq_handler(void *context) {
     nrf24l01_standby(nrf);
 
     events = 0;
-    value = nrf24l01_read_status(nrf);
+    value = nrf24l01_clear_status(nrf);
 
+    if (nrf->hal->irqSource()) {
+        events |= NRF24L01_IRQ_TRIGGER;
+    }
     if (value & NRF24L01_STATUS_TX_DS) {
         events |= NRF24L01_TX_DONE;
     }
