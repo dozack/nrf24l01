@@ -41,7 +41,8 @@ struct nrf24l01;
 typedef void (*nrf24l01_callback_t)(void *context);
 
 typedef struct {
-    void        (*initialize    )(nrf24l01_callback_t callback, void *context);
+    void        (*initialize    )(void);
+    void        (*attachIrq     )(nrf24l01_callback_t callback, void *context);
     void        (*spiTransfer   )(uint8_t tx, uint8_t *rx);
     void        (*powerControl  )(uint8_t state);
     void        (*selectControl )(uint8_t state);

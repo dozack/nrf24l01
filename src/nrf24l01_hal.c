@@ -52,6 +52,10 @@ int nrf24l01_hal_validate(struct nrf24l01 *nrf) {
         NRF24L01_LOG("[nrf24l01] HAL->initialize is missing... \r\n");
         res = -1;
     }
+    if ((hal->attachIrq) == NULL) {
+        NRF24L01_LOG("[nrf24l01] HAL->attachIrq is missing... \r\n");
+        res = -1;
+    }
     if ((hal->spiTransfer) == NULL) {
         NRF24L01_LOG("[nrf24l01] HAL->spiTransfer is missing... \r\n");
         res = -1;

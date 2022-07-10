@@ -38,6 +38,7 @@ static void *nrfContext;
 nrf24l01_hal_t nrf24l01_hal_stm32f7xx = {
     &nrf24l01_hal_stm32f7xx_initialize,
     &nrf24l01_hal_stm32f7xx_spiTransfer,
+    &nrf24l01_hal_stm32f7xx_attachIrq,
     &nrf24l01_hal_stm32f7xx_powerControl,
     &nrf24l01_hal_stm32f7xx_selectControl,
     &nrf24l01_hal_stm32f7xx_clockControl,
@@ -46,7 +47,7 @@ nrf24l01_hal_t nrf24l01_hal_stm32f7xx = {
     &nrf24l01_hal_stm32f7xx_irqTrigger,
     &nrf24l01_hal_stm32f7xx_deinitialize, };
 
-void nrf24l01_hal_stm32f7xx_initialize(nrf24l01_callback_t callback, void *context) {
+void nrf24l01_hal_stm32f7xx_initialize(void) {
     GPIO_InitTypeDef GPIO_InitStruct;
 
     NRF24L01_PWR_CLK_EN();
@@ -160,13 +161,21 @@ void nrf24l01_hal_stm32f7xx_initialize(nrf24l01_callback_t callback, void *conte
         return;
     }
 
+    /* Flush RX FIFO */
+    HAL_SPIEx_FlushRxFifo(&nrfSpi);
+}
+
+void nrf24l01_hal_stm32f7xx_attachIrq(nrf24l01_callback_t callback, void *context) {
+
     nrfCallback = callback;
     nrfContext = context;
 
-    /* Flush RX FIFO */
-    HAL_SPIEx_FlushRxFifo(&nrfSpi);
-    HAL_NVIC_SetPriority(NRF24L01_IRQ_N, NRF24L01_IRQ_PRIO, 0);
-    HAL_NVIC_EnableIRQ(NRF24L01_IRQ_N);
+    if (callback == NULL) {
+        HAL_NVIC_DisableIRQ(NRF24L01_IRQ_N);
+    } else {
+        HAL_NVIC_SetPriority(NRF24L01_IRQ_N, NRF24L01_IRQ_PRIO, 0);
+        HAL_NVIC_EnableIRQ(NRF24L01_IRQ_N);
+    }
 }
 
 void nrf24l01_hal_stm32f7xx_spiTransfer(uint8_t tx, uint8_t *rx) {

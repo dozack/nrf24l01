@@ -55,7 +55,7 @@ void nrf24l01_initialize(nrf24l01_t *nrf) {
     nrf->state = NRF_UNINIT;
 
     hal = nrf->hal;
-    hal->initialize(&nrf24l01_irq_handler, nrf);
+    hal->initialize();
     hal->powerControl(1);
     hal->clockControl(0);
     hal->selectControl(1);
@@ -143,6 +143,8 @@ int nrf24l01_open(nrf24l01_t *nrf, uint8_t channel, uint64_t address) {
 
     nrf24l01_clear_status(nrf);
     nrf24l01_power_up(nrf);
+
+    nrf->hal->attachIrq(&nrf24l01_irq_handler, nrf);
 
     NRF24L01_LOG("[nrf24l01] Channel open... \r\n");
 
@@ -308,7 +310,8 @@ int nrf24l01_read(nrf24l01_t *nrf, uint8_t *data, uint8_t *size) {
 void nrf24l01_close(nrf24l01_t *nrf) {
 
     nrf24l01_power_down(nrf);
-
+    /* Clear irq handler to disable interrupt */
+    nrf->hal->attachIrq(NULL, NULL);
 }
 
 void nrf24l01_deinitialize(nrf24l01_t *nrf) {

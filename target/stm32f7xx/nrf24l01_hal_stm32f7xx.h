@@ -86,7 +86,9 @@ extern "C"{
 #define NRF24L01_IRQ_HANDLER            (EXTI3_IRQHandler)
 #define NRF24L01_IRQ_PRIO               (5)
 
-extern void nrf24l01_hal_stm32f7xx_initialize(nrf24l01_callback_t callback, void *context);
+extern void nrf24l01_hal_stm32f7xx_initialize(void);
+
+extern void nrf24l01_hal_stm32f7xx_attachIrq(nrf24l01_callback_t callback, void *context);
 
 extern void nrf24l01_hal_stm32f7xx_spiTransfer(uint8_t tx, uint8_t *rx);
 
