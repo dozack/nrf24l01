@@ -105,7 +105,7 @@ int nrf24l01_open(nrf24l01_t *nrf, uint8_t channel, uint64_t address) {
     nrf->channel = channel;
     nrf->address = address;
 
-    value = NRF24L01_CONFIG_EN_CRC;
+    value = (NRF24L01_CONFIG_EN_CRC | NRF24L01_CONFIG_CRCO);
     nrf24l01_register_write(nrf, NRF24L01_REG_CONFIG, value);
 
     value = channel;
