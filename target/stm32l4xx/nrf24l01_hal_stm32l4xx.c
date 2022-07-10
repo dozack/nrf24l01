@@ -37,8 +37,8 @@ static struct stm32l4xx_driver _stm32l4xx;
 
 nrf24l01_hal_t nrf24l01_hal_stm32l4xx = {
     &nrf24l01_hal_stm32l4xx_initialize,
-    &nrf24l01_hal_stm32l4xx_spiTransfer,
     &nrf24l01_hal_stm32l4xx_attachIrq,
+    &nrf24l01_hal_stm32l4xx_spiTransfer,
     &nrf24l01_hal_stm32l4xx_powerControl,
     &nrf24l01_hal_stm32l4xx_selectControl,
     &nrf24l01_hal_stm32l4xx_clockControl,
@@ -171,8 +171,8 @@ void nrf24l01_hal_stm32l4xx_initialize(void) {
 
 void nrf24l01_hal_stm32l4xx_attachIrq(nrf24l01_callback_t callback, void *context) {
 
-    nrfCallback = callback;
-    nrfContext = context;
+    _stm32l4xx.callback = callback;
+    _stm32l4xx.context = context;
 
     if (callback == NULL) {
         HAL_NVIC_DisableIRQ(NRF24L01_IRQ_N);
@@ -229,7 +229,7 @@ uint8_t nrf24l01_hal_stm32l4xx_irqState(void) {
 }
 
 uint8_t nrf24l01_hal_stm32l4xx_irqSource(void) {
-    return (uint8_t) (EXTI->SWIER & NRF24L01_IRQ_PIN);
+    return (uint8_t) (EXTI->SWIER1 & NRF24L01_IRQ_PIN);
 }
 
 void nrf24l01_hal_stm32l4xx_irqTrigger(void) {
@@ -238,7 +238,7 @@ void nrf24l01_hal_stm32l4xx_irqTrigger(void) {
 
 void nrf24l01_hal_stm32l4xx_deinitialize(void) {
     HAL_NVIC_DisableIRQ(NRF24L01_IRQ_N);
-    HAL_SPI_DeInit(&nrfSpi);
+    HAL_SPI_DeInit(&_stm32l4xx.hspi);
 
     NRF24L01_SPI_CLK_DIS();
 
@@ -256,8 +256,6 @@ void nrf24l01_hal_stm32l4xx_deinitialize(void) {
 
 void NRF24L01_IRQ_HANDLER(void) {
 
-    NRF24L01_TRACE_IRQ_ENTER();
-
     /*
      * HAL_GPIO_EXTI_IRQHandler call clears the pending interrupt pending flag.
      * This prevents us from software interrupt trigger detection.
@@ -269,8 +267,6 @@ void NRF24L01_IRQ_HANDLER(void) {
     }
 
     HAL_GPIO_EXTI_IRQHandler(NRF24L01_IRQ_PIN);
-
-    NRF24L01_TRACE_IRQ_EXIT();
 }
 
 
