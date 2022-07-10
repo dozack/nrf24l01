@@ -43,14 +43,9 @@ typedef enum {
     NRF_RECEIVE                 = 4,
 } nrf24l01_state_t;
 
-#define NRF24L01_TX_DONE        (0x1)
-#define NRF24L01_TX_ERROR       (0x2)
-#define NRF24L01_RX_DONE        (0x4)
-#define NRF24L01_IRQ_TRIGGER    (0x8)
+typedef void (*nrf24l01_event_callback_t)(void *context);
 
-typedef void (*nrf24l01_event_callback_t)(void *context, uint8_t events);
-
-struct nrf24l01 {
+typedef struct nrf24l01 {
     nrf24l01_hal_t             *hal;
 
     nrf24l01_state_t            state;
@@ -59,9 +54,7 @@ struct nrf24l01 {
 
     uint8_t                     channel;
     uint64_t                    address;
-};
-
-typedef struct nrf24l01 nrf24l01_t;
+} nrf24l01_t;
 
 extern void nrf24l01_initialize(nrf24l01_t *nrf);
 

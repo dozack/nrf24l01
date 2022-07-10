@@ -326,37 +326,25 @@ void nrf24l01_deinitialize(nrf24l01_t *nrf) {
 }
 
 static void nrf24l01_irq_handler(void *context) {
-    uint8_t value, events;
     nrf24l01_t *nrf;
 
     nrf = (nrf24l01_t*) context;
-    nrf24l01_standby(nrf);
 
-    events = 0;
-    value = nrf24l01_clear_status(nrf);
+    /*
+     * In case callback is attached, do not directly access
+     * the device as it may interrupt pending SPI transmission
+     * in thread context. Instead execute callback and let user
+     * decide how to handle the event that caused the interrupt.
+     */
 
-    if (nrf->hal->irqSource()) {
-        events |= NRF24L01_IRQ_TRIGGER;
-    }
-    if (value & NRF24L01_STATUS_TX_DS) {
-        events |= NRF24L01_TX_DONE;
-    }
-    if (value & NRF24L01_STATUS_MAX_RT) {
-        events |= NRF24L01_TX_ERROR;
-    }
-    if (value & NRF24L01_STATUS_RX_DR) {
-        events |= NRF24L01_RX_DONE;
-    }
-
-    if (events != 0) {
-        if (nrf->callback != NULL) {
-            /* Callback attached, execute */
-            nrf->callback(nrf->context, events);
-        } else {
-            /* Callback not attached, flush device and continue */
-            nrf24l01_flush_tx(nrf);
-            nrf24l01_flush_rx(nrf);
-        }
+    if (nrf->callback != NULL) {
+        /* Callback attached, execute */
+        nrf->callback(nrf->context);
+    } else {
+        /* Callback not attached, flush device and continue */
+        nrf24l01_clear_status(nrf);
+        nrf24l01_flush_tx(nrf);
+        nrf24l01_flush_rx(nrf);
     }
 }
 
