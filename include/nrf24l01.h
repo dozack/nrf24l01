@@ -45,6 +45,13 @@ typedef enum {
 
 typedef void (*nrf24l01_event_callback_t)(void *context);
 
+typedef struct nrf24l01_config {
+    uint8_t                     channel;
+    uint64_t                    address;
+    uint8_t                     retr_count;
+    uint32_t                    retr_delay;
+} nrf24l01_config_t;
+
 typedef struct nrf24l01 {
     nrf24l01_hal_t             *hal;
 
@@ -52,8 +59,7 @@ typedef struct nrf24l01 {
     nrf24l01_event_callback_t   callback;
     void *                      context;
 
-    uint8_t                     channel;
-    uint64_t                    address;
+    nrf24l01_config_t           config;
 } nrf24l01_t;
 
 extern void nrf24l01_initialize(nrf24l01_t *nrf);
@@ -62,7 +68,9 @@ extern void nrf24l01_notify(nrf24l01_t *nrf, nrf24l01_event_callback_t callback,
 
 extern int nrf24l01_probe(nrf24l01_t *nrf);
 
-extern int nrf24l01_open(nrf24l01_t *nrf, uint8_t channel, uint64_t address);
+extern int nrf24l01_configure(nrf24l01_t *nrf, nrf24l01_config_t *config);
+
+extern int nrf24l01_open(nrf24l01_t *nrf);
 
 extern void nrf24l01_trigger_irq(nrf24l01_t *nrf);
 

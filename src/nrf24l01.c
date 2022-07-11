@@ -60,10 +60,13 @@ void nrf24l01_initialize(nrf24l01_t *nrf) {
     hal->clockControl(0);
     hal->selectControl(1);
 
-    nrf->channel = 0;
-    nrf->address = 0;
     nrf->callback = NULL;
     nrf->context = NULL;
+
+    nrf->config.address = NRF24L01_DEFAULT_ADDRESS;
+    nrf->config.channel = NRF24L01_DEFAULT_CHANNEL;
+    nrf->config.retr_count = NRF24L01_DEFAULT_RETR_COUNT;
+    nrf->config.retr_delay = NRF24L01_DEFAULT_RETR_DELAY;
 
     nrf->state = NRF_POWERDOWN;
 }
@@ -89,7 +92,32 @@ int nrf24l01_probe(nrf24l01_t *nrf) {
     return (0);
 }
 
-int nrf24l01_open(nrf24l01_t *nrf, uint8_t channel, uint64_t address) {
+int nrf24l01_configure(nrf24l01_t *nrf, nrf24l01_config_t *config) {
+    if ((nrf == NULL) || (config) == NULL) {
+        return (-1);
+    }
+    if (config->channel > 125) {
+        return (-1);
+    }
+    if (config->retr_count > 0xf) {
+        /*
+         * TODO: return invalid config instead of contents manipulation?
+         */
+        config->retr_count = 0xf;
+    }
+    if (config->retr_delay > 4000) {
+        config->retr_delay = 4000;
+    }
+
+    nrf->config.address = config->address;
+    nrf->config.channel = config->channel;
+    nrf->config.retr_count = config->retr_count;
+    nrf->config.retr_delay = config->retr_delay;
+
+    return (0);
+}
+
+int nrf24l01_open(nrf24l01_t *nrf) {
     uint8_t value;
 
     if (nrf == NULL) {
@@ -102,21 +130,13 @@ int nrf24l01_open(nrf24l01_t *nrf, uint8_t channel, uint64_t address) {
         return -1;
     }
 
-    if (channel > 125) {
-        NRF24L01_LOG("[nrf24l01] Failed to connect due to invalid channel... \r\n");
-        return -1;
-    }
-
-    nrf->channel = channel;
-    nrf->address = address;
-
     value = (NRF24L01_CONFIG_EN_CRC | NRF24L01_CONFIG_CRCO);
     nrf24l01_register_write(nrf, NRF24L01_REG_CONFIG, value);
 
-    value = channel;
+    value = nrf->config.channel;
     nrf24l01_register_write(nrf, NRF24L01_REG_RF_CH, value);
 
-    value = 0x3f;
+    value = ((nrf->config.retr_delay / 250) << 4) | (nrf->config.retr_count);
     nrf24l01_register_write(nrf, NRF24L01_REG_SETUP_RETR, value);
 
     value = (NRF24L01_RF_SETUP_RF_PWR | NRF24L01_RF_SETUP_RF_DR | NRF24L01_RF_SETUP_LNA_HCURR);
@@ -140,8 +160,11 @@ int nrf24l01_open(nrf24l01_t *nrf, uint8_t channel, uint64_t address) {
     value = 3;
     nrf24l01_register_write(nrf, NRF24L01_REG_SETUP_AW, value);
 
-    nrf24l01_spi_write(nrf, (NRF24L01_CMD_WRITE_REGISTER | NRF24L01_REG_RX_ADDR_P0), (uint8_t*) &address, 5);
-    nrf24l01_spi_write(nrf, (NRF24L01_CMD_WRITE_REGISTER | NRF24L01_REG_TX_ADDR), (uint8_t*) &address, 5);
+    value = (NRF24L01_CMD_WRITE_REGISTER | NRF24L01_REG_RX_ADDR_P0);
+    nrf24l01_spi_write(nrf, value, (uint8_t*) &nrf->config.address, 5);
+
+    value = (NRF24L01_CMD_WRITE_REGISTER | NRF24L01_REG_TX_ADDR);
+    nrf24l01_spi_write(nrf, value, (uint8_t*) &nrf->config.address, 5);
 
     nrf24l01_flush_tx(nrf);
     nrf24l01_flush_rx(nrf);

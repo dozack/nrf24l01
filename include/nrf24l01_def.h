@@ -41,6 +41,11 @@ extern "C"{
 
 #define NRF24L01_MAX_PAYLOAD_SIZE                   (32)
 
+#define NRF24L01_DEFAULT_ADDRESS                    (0x5555555555)
+#define NRF24L01_DEFAULT_CHANNEL                    (80)
+#define NRF24L01_DEFAULT_RETR_COUNT                 (0xf)
+#define NRF24L01_DEFAULT_RETR_DELAY                 (4000)
+
 /**
  * @brief   NRF24L01 register addresses
  */
