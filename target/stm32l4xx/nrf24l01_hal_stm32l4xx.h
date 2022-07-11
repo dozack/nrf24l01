@@ -35,6 +35,14 @@ extern "C"{
 #include "nrf24l01_hal.h"
 #include "stm32l4xx.h"
 
+#define NRF24L01_TRACE_INC              "FreeRTOS.h"
+#define NRF24L01_TRACE_IRQ_ENTER()      traceISR_ENTER()
+#define NRF24L01_TRACE_IRQ_EXIT()       traceISR_EXIT()
+
+#undef NRF24L01_LOG
+#define NRF24L01_LOG(...)               printf(__VA_ARGS__)
+
+
 #define NRF24L01_LOCK_PINS              (1)
 
 #define NRF24L01_SPI_INSTANCE           (SPI1_BASE)

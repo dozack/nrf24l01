@@ -27,6 +27,10 @@
 
 #include "nrf24l01_hal_stm32l4xx.h"
 
+#if defined NRF24L01_TRACE_INC
+#include NRF24L01_TRACE_INC
+#endif
+
 struct stm32l4xx_driver {
     SPI_HandleTypeDef hspi;
     nrf24l01_callback_t callback;
@@ -256,6 +260,8 @@ void nrf24l01_hal_stm32l4xx_deinitialize(void) {
 
 void NRF24L01_IRQ_HANDLER(void) {
 
+    NRF24L01_TRACE_IRQ_ENTER();
+
     /*
      * HAL_GPIO_EXTI_IRQHandler call clears the pending interrupt pending flag.
      * This prevents us from software interrupt trigger detection.
@@ -267,6 +273,8 @@ void NRF24L01_IRQ_HANDLER(void) {
     }
 
     HAL_GPIO_EXTI_IRQHandler(NRF24L01_IRQ_PIN);
+
+    NRF24L01_TRACE_IRQ_EXIT();
 }
 
 
