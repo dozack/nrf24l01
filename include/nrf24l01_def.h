@@ -121,6 +121,11 @@ extern "C"{
 #define NRF24L01_STATUS_RX_DR                       (1 << 6)
 
 /**
+ * @brief   REG_RPD masks
+ */
+#define NRF24L01_RPD_RPD                            (1 << 0)
+
+/**
  * @brief   Mask of all interrupt sources at once
  */
 #define NRF24L01_STATUS_IRQ_MASK                    (NRF24L01_STATUS_MAX_RT | NRF24L01_STATUS_TX_DS | NRF24L01_STATUS_RX_DR)

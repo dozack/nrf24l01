@@ -60,6 +60,8 @@ extern void nrf24l01_initialize(nrf24l01_t *nrf);
 
 extern void nrf24l01_notify(nrf24l01_t *nrf, nrf24l01_event_callback_t callback, void *context);
 
+extern int nrf24l01_probe(nrf24l01_t *nrf);
+
 extern int nrf24l01_open(nrf24l01_t *nrf, uint8_t channel, uint64_t address);
 
 extern void nrf24l01_trigger_irq(nrf24l01_t *nrf);
@@ -85,6 +87,8 @@ extern uint8_t nrf24l01_read_status(nrf24l01_t *nrf);
 extern uint8_t nrf24l01_clear_status(nrf24l01_t *nrf);
 
 extern bool nrf24l01_tx_pending(nrf24l01_t *nrf);
+
+extern bool nrf24l01_channel_available(nrf24l01_t *nrf);
 
 extern int nrf24l01_write(nrf24l01_t *nrf, uint8_t *data, uint8_t size);
 

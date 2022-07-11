@@ -77,6 +77,18 @@ void nrf24l01_notify(nrf24l01_t *nrf, nrf24l01_event_callback_t callback, void *
     nrf->context = context;
 }
 
+int nrf24l01_probe(nrf24l01_t *nrf) {
+    uint8_t value;
+
+    value = nrf24l01_register_read(nrf, NRF24L01_REG_SETUP_AW);
+
+    if ((value < 1) || (value > 3)) {
+        return (-1);
+    }
+
+    return (0);
+}
+
 int nrf24l01_open(nrf24l01_t *nrf, uint8_t channel, uint64_t address) {
     uint8_t value;
 
@@ -92,13 +104,6 @@ int nrf24l01_open(nrf24l01_t *nrf, uint8_t channel, uint64_t address) {
 
     if (channel > 125) {
         NRF24L01_LOG("[nrf24l01] Failed to connect due to invalid channel... \r\n");
-        return -1;
-    }
-
-    value = nrf24l01_register_read(nrf, NRF24L01_REG_SETUP_AW);
-
-    if ((value < 1) || (value > 3)) {
-        NRF24L01_LOG("[nrf24l01] Device failed sanity check (invalid register readout)... \r\n");
         return -1;
     }
 
@@ -245,6 +250,14 @@ bool nrf24l01_tx_pending(nrf24l01_t *nrf) {
     return (value & NRF24L01_FIFO_STATUS_TX_EMPTY) ? false : true;
 }
 
+bool nrf24l01_channel_available(nrf24l01_t *nrf) {
+    uint8_t value;
+
+    value = nrf24l01_register_read(nrf, NRF24L01_REG_RPD);
+
+    return (bool) !(value & NRF24L01_RPD_RPD);
+}
+
 int nrf24l01_write(nrf24l01_t *nrf, uint8_t *data, uint8_t size) {
     uint8_t value;
 
@@ -340,11 +353,6 @@ static void nrf24l01_irq_handler(void *context) {
     if (nrf->callback != NULL) {
         /* Callback attached, execute */
         nrf->callback(nrf->context);
-    } else {
-        /* Callback not attached, flush device and continue */
-        nrf24l01_clear_status(nrf);
-        nrf24l01_flush_tx(nrf);
-        nrf24l01_flush_rx(nrf);
     }
 }
 
