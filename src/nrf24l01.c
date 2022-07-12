@@ -232,8 +232,6 @@ void nrf24l01_listen(nrf24l01_t *nrf) {
     value |= NRF24L01_CONFIG_PRIM_RX;
     nrf24l01_register_write(nrf, NRF24L01_REG_CONFIG, value);
 
-    nrf24l01_clear_status(nrf);
-
     nrf->state = NRF_RECEIVE;
     nrf->hal->clockControl(1);
 }
@@ -265,12 +263,19 @@ uint8_t nrf24l01_clear_status(nrf24l01_t *nrf) {
     return (value & NRF24L01_STATUS_IRQ_MASK);
 }
 
-bool nrf24l01_tx_pending(nrf24l01_t *nrf) {
+uint8_t nrf24l01_tx_pending(nrf24l01_t *nrf) {
     uint8_t value;
 
     value = nrf24l01_register_read(nrf, NRF24L01_REG_FIFO_STATUS);
 
-    return (value & NRF24L01_FIFO_STATUS_TX_EMPTY) ? false : true;
+    if (value & NRF24L01_FIFO_STATUS_TX_EMPTY) {
+        return (0);
+    }
+    if (value & NRF24L01_FIFO_STATUS_TX_FULL) {
+        return (3);
+    }
+
+    return (2);
 }
 
 bool nrf24l01_channel_available(nrf24l01_t *nrf) {
@@ -319,12 +324,19 @@ int nrf24l01_write_ack(nrf24l01_t *nrf, uint8_t *data, uint8_t size) {
     return -1;
 }
 
-bool nrf24l01_rx_pending(nrf24l01_t *nrf) {
+uint8_t nrf24l01_rx_pending(nrf24l01_t *nrf) {
     uint8_t value;
 
     value = nrf24l01_register_read(nrf, NRF24L01_REG_FIFO_STATUS);
 
-    return (value & NRF24L01_FIFO_STATUS_RX_EMPTY) ? false : true;
+    if (value & NRF24L01_FIFO_STATUS_RX_EMPTY) {
+        return (0);
+    }
+    if (value & NRF24L01_FIFO_STATUS_RX_FULL) {
+        return (3);
+    }
+
+    return (2);
 }
 
 int nrf24l01_read(nrf24l01_t *nrf, uint8_t *data, uint8_t *size) {

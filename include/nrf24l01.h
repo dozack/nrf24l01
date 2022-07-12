@@ -94,7 +94,7 @@ extern uint8_t nrf24l01_read_status(nrf24l01_t *nrf);
 
 extern uint8_t nrf24l01_clear_status(nrf24l01_t *nrf);
 
-extern bool nrf24l01_tx_pending(nrf24l01_t *nrf);
+extern uint8_t nrf24l01_tx_pending(nrf24l01_t *nrf);
 
 extern bool nrf24l01_channel_available(nrf24l01_t *nrf);
 
@@ -102,7 +102,7 @@ extern int nrf24l01_write(nrf24l01_t *nrf, uint8_t *data, uint8_t size);
 
 extern int nrf24l01_write_ack(nrf24l01_t *nrf, uint8_t *data, uint8_t size);
 
-extern bool nrf24l01_rx_pending(nrf24l01_t *nrf);
+extern uint8_t nrf24l01_rx_pending(nrf24l01_t *nrf);
 
 extern int nrf24l01_read(nrf24l01_t *nrf, uint8_t *data, uint8_t *size);
 
