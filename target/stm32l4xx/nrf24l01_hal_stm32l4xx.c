@@ -54,7 +54,7 @@ nrf24l01_hal_t nrf24l01_hal_stm32l4xx = {
 void nrf24l01_hal_stm32l4xx_initialize(void) {
     GPIO_InitTypeDef GPIO_InitStruct;
 
-#if 0 /* Power management not currently available */
+#if 1 /* Power management not currently available */
 
     NRF24L01_PWR_CLK_EN();
 
@@ -207,11 +207,9 @@ void nrf24l01_hal_stm32l4xx_spiTransfer(uint8_t tx, uint8_t *rx) {
 
 void nrf24l01_hal_stm32l4xx_powerControl(uint8_t state) {
 
-#if 0 /* Power management not currently available */
+#if 1 /* Power management not currently available */
     if (state) {
         HAL_GPIO_WritePin((GPIO_TypeDef*) NRF24L01_PWR_PORT, NRF24L01_PWR_PIN, GPIO_PIN_RESET);
-        /* Wait for device voltage to stabilize */
-        HAL_Delay(250);
     } else {
         HAL_GPIO_WritePin((GPIO_TypeDef*) NRF24L01_PWR_PORT, NRF24L01_PWR_PIN, GPIO_PIN_SET);
     }

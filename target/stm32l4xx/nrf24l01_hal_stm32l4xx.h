@@ -45,46 +45,46 @@ extern "C"{
 
 #define NRF24L01_LOCK_PINS              (1)
 
-#define NRF24L01_SPI_INSTANCE           (SPI1_BASE)
-#define NRF24L01_SPI_CLK_EN()           do { __HAL_RCC_SPI1_CLK_ENABLE();  } while(0)
-#define NRF24L01_SPI_CLK_DIS()          do { __HAL_RCC_SPI1_CLK_DISABLE(); } while(0)
+#define NRF24L01_SPI_INSTANCE           (SPI2_BASE)
+#define NRF24L01_SPI_CLK_EN()           do { __HAL_RCC_SPI2_CLK_ENABLE();  } while(0)
+#define NRF24L01_SPI_CLK_DIS()          do { __HAL_RCC_SPI2_CLK_DISABLE(); } while(0)
 
-#define NRF24L01_MISO_CLK_EN()          do { __HAL_RCC_GPIOA_CLK_ENABLE(); } while(0)
-#define NRF24L01_MISO_PORT              (GPIOA_BASE)
-#define NRF24L01_MISO_PIN               (GPIO_PIN_6)
-#define NRF24L01_MISO_AF                (GPIO_AF5_SPI1)
+#define NRF24L01_MISO_CLK_EN()          do { __HAL_RCC_GPIOB_CLK_ENABLE(); } while(0)
+#define NRF24L01_MISO_PORT              (GPIOB_BASE)
+#define NRF24L01_MISO_PIN               (GPIO_PIN_14)
+#define NRF24L01_MISO_AF                (GPIO_AF5_SPI2)
 
-#define NRF24L01_MOSI_CLK_EN()          do { __HAL_RCC_GPIOA_CLK_ENABLE(); } while(0)
-#define NRF24L01_MOSI_PORT              (GPIOA_BASE)
-#define NRF24L01_MOSI_PIN               (GPIO_PIN_7)
-#define NRF24L01_MOSI_AF                (GPIO_AF5_SPI1)
+#define NRF24L01_MOSI_CLK_EN()          do { __HAL_RCC_GPIOB_CLK_ENABLE(); } while(0)
+#define NRF24L01_MOSI_PORT              (GPIOB_BASE)
+#define NRF24L01_MOSI_PIN               (GPIO_PIN_15)
+#define NRF24L01_MOSI_AF                (GPIO_AF5_SPI2)
 
-#define NRF24L01_SCK_CLK_EN()           do { __HAL_RCC_GPIOA_CLK_ENABLE(); } while(0)
-#define NRF24L01_SCK_PORT               (GPIOA_BASE)
-#define NRF24L01_SCK_PIN                (GPIO_PIN_5)
-#define NRF24L01_SCK_AF                 (GPIO_AF5_SPI1)
+#define NRF24L01_SCK_CLK_EN()           do { __HAL_RCC_GPIOB_CLK_ENABLE(); } while(0)
+#define NRF24L01_SCK_PORT               (GPIOB_BASE)
+#define NRF24L01_SCK_PIN                (GPIO_PIN_13)
+#define NRF24L01_SCK_AF                 (GPIO_AF5_SPI2)
 
 #define NRF24L01_CSN_CLK_EN()           do { __HAL_RCC_GPIOB_CLK_ENABLE(); } while(0)
 #define NRF24L01_CSN_PORT               (GPIOB_BASE)
-#define NRF24L01_CSN_PIN                (GPIO_PIN_6)
+#define NRF24L01_CSN_PIN                (GPIO_PIN_12)
 #define NRF24L01_CSN_PULL               (GPIO_NOPULL)
 
-#define NRF24L01_PWR_CLK_EN()
-#define NRF24L01_PWR_PORT
-#define NRF24L01_PWR_PIN
-#define NRF24L01_PWR_PULL
+#define NRF24L01_PWR_CLK_EN()           do { __HAL_RCC_GPIOC_CLK_ENABLE(); } while(0)
+#define NRF24L01_PWR_PORT               (GPIOC_BASE)
+#define NRF24L01_PWR_PIN                (GPIO_PIN_12)
+#define NRF24L01_PWR_PULL               (GPIO_NOPULL)
 
-#define NRF24L01_CE_CLK_EN()            do { __HAL_RCC_GPIOA_CLK_ENABLE(); } while(0)
-#define NRF24L01_CE_PORT                (GPIOA_BASE)
-#define NRF24L01_CE_PIN                 (GPIO_PIN_9)
+#define NRF24L01_CE_CLK_EN()            do { __HAL_RCC_GPIOB_CLK_ENABLE(); } while(0)
+#define NRF24L01_CE_PORT                (GPIOB_BASE)
+#define NRF24L01_CE_PIN                 (GPIO_PIN_6)
 #define NRF24L01_CE_PULL                (GPIO_NOPULL)
 
-#define NRF24L01_IRQ_CLK_EN()           do { __HAL_RCC_GPIOC_CLK_ENABLE(); } while(0)
-#define NRF24L01_IRQ_PORT               (GPIOC_BASE)
-#define NRF24L01_IRQ_PIN                (GPIO_PIN_7)
+#define NRF24L01_IRQ_CLK_EN()           do { __HAL_RCC_GPIOA_CLK_ENABLE(); } while(0)
+#define NRF24L01_IRQ_PORT               (GPIOA_BASE)
+#define NRF24L01_IRQ_PIN                (GPIO_PIN_15)
 #define NRF24L01_IRQ_PULL               (GPIO_NOPULL)
-#define NRF24L01_IRQ_N                  (EXTI9_5_IRQn)
-#define NRF24L01_IRQ_HANDLER            (EXTI9_5_IRQHandler)
+#define NRF24L01_IRQ_N                  (EXTI15_10_IRQn)
+#define NRF24L01_IRQ_HANDLER            (EXTI15_10_IRQHandler)
 #define NRF24L01_IRQ_PRIO               (5)
 
 extern void nrf24l01_hal_stm32l4xx_initialize(void);
